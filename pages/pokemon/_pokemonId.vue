@@ -3,33 +3,14 @@
     <nuxt-link to="/">
       <ArrowBack />
     </nuxt-link>
-    <div class="container">
-      <section>
-        <div class="name">
-          <p class="number">#0{{ pokemon.id }}</p>
-          <p>{{ pokemon.name }}</p>
-        </div>
-        <div class="headerInfo">
-          <img
-            :src="pokemonImage"
-            :alt="`Pokemon ${pokemon.name}`"
-            class="pokemonImg"
-          />
-        </div>
-
-        <div class="types">{types}</div>
-
-        <div class="bodyInfo">
-          <!-- <div>
-            <ColumnInfo info="{info1}" />
-            <ColumnInfo info="{info2}" />
-          </div>
-          <div class="stats">{stats}</div>
-          <div>
-            <ColumnInfo info="{info1}" />
-            <ColumnInfo info="{info2}" />
-          </div> -->
-        </div>
+    <div class="profile">
+      <ProfileCard :pokemon="pokemon" />
+    </div>
+    <div class="profileBody">
+      <section class="sectionBody">
+        <Info :pokemon-info="pokemonInfo" />
+        <Stats :stats="pokemon.stats" />
+        <Evolutions :pokemons="pokemonsEvolutions" />
       </section>
     </div>
   </div>
@@ -38,75 +19,85 @@
 <script>
 import { mapGetters } from 'vuex'
 export default {
-  fetch() {
-    const pokemonId = this.$route.params.pokemonId
-    this.$store.dispatch('fetchPokemon', { id: pokemonId })
-  },
   computed: {
-    ...mapGetters(['getPokemon']),
-    pokemonImage() {
-      return this.pokemon?.sprites?.other?.dream_world?.front_default
-    },
+    ...mapGetters(['getPokemon', 'getEvolutions', 'getPokemonsEvolutions']),
     pokemon() {
-      console.log(this.getPokemon)
       return this.getPokemon
     },
+    pokemonInfo() {
+      const height = this.pokemon?.height?.toString().split('').join(',')
+      const kilo = this.pokemon?.weight
+        ?.toString()
+        .split('')
+        .slice(0, 2)
+        .join('')
+      const grams = this.pokemon?.weight?.toString().split('').slice(2)
+      const weight = kilo?.length > 2 ? `${kilo},${grams} kg` : `${kilo} kg`
+      const ability = this.pokemon?.abilities?.map(
+        (ability) => ability.ability.name
+      )
+      const experience = this.pokemon?.base_experience
+      return {
+        height: height?.length > 1 ? `${height} m` : `0,${height} m`,
+        weight,
+        ability,
+        experience,
+      }
+    },
+    pokemonStats() {
+      const stats = this.pokemon?.stats.map((stat) => stat)
+      return stats
+    },
+    pokemonsEvolutions() {
+      const pokemons = this.getPokemonsEvolutions.map((pokemon) => {
+        return {
+          id: pokemon.id,
+          name: pokemon.name,
+          image: pokemon.sprites.other.dream_world.front_default,
+        }
+      })
+      return pokemons
+    },
+  },
+  async mounted() {
+    const pokemonId = this.$route.params.pokemonId
+    await this.$store.dispatch('fetchPokemon', { id: pokemonId })
+    await this.$store.dispatch('fetchEvolutionChain', {
+      url: this.pokemon?.species?.url,
+    })
+    const name1 = this.getEvolutions?.chain?.species?.name
+    const name2 = this.getEvolutions?.chain?.evolves_to[0]?.species?.name
+    const name3 =
+      this.getEvolutions?.chain?.evolves_to[0]?.evolves_to[0]?.species?.name
+    await this.$store.dispatch('fetchPokemonsEvolution', {
+      names: [name1, name2, name3],
+    })
   },
 }
 </script>
 
-<style scoped>
-.container {
+<style>
+.profile {
+  display: flex;
+  flex-direction: column;
+  place-items: center;
+}
+.profileBody {
   display: flex;
   justify-content: center;
-  place-items: center;
 }
 section {
-  display: flex;
-  place-items: center;
-  flex-direction: column;
   background: #fff;
-  width: 50%;
   border-radius: 50px;
   box-shadow: 0 10px 25px rgb(216, 1, 40, 0.2);
-  padding-top: 50px;
-  margin: 50px;
-}
-.info {
   display: flex;
-  flex-direction: column;
+  padding: 50px 0;
+  width: 50%;
 }
-.name {
+.sectionBody {
   width: 80%;
-  display: flex;
-  justify-content: space-between;
-  padding: 0 5px;
-}
-.headerInfo {
-  width: 80%;
-  height: 130px;
-  border-radius: 10px;
-  background: rgb(255, 163, 246);
-  background: linear-gradient(
-    90deg,
-    rgba(255, 163, 246, 1) 15%,
-    rgba(233, 97, 255, 1) 40%
-  );
-}
-.pokemonImg {
-  position: relative;
-  top: -80px;
-  width: 10rem;
-}
-p {
-  font-weight: bold;
-  margin: 0;
-}
-.number {
-  color: rgba(224, 35, 255, 1);
-}
-.types {
-  width: 82%;
+  justify-content: space-evenly;
+  flex-wrap: wrap;
 }
 .bodyInfo {
   display: flex;
@@ -136,9 +127,5 @@ p {
   border: 3px solid gray;
   padding: 10px;
   cursor: pointer;
-}
-.stats {
-  display: flex;
-  flex-direction: column;
 }
 </style>
