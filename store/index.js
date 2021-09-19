@@ -1,7 +1,7 @@
 export const state = () => ({
   pokemon: [],
   evolutions: [],
-  pokemonsEvolutions: []
+  pokemonsEvolutions: [],
 })
 
 export const mutations = {
@@ -13,7 +13,7 @@ export const mutations = {
   },
   addPokemonEvolution(state, pokemons) {
     state.pokemonsEvolutions = pokemons
-  }
+  },
 }
 
 export const getters = {
@@ -29,14 +29,14 @@ export const getters = {
 }
 
 export const actions = {
-  async fetchPokemon({commit}, {id, keyword}) {
+  async fetchPokemon({commit}, {id}) {
       try {
         const url = `https://pokeapi.co/api/v2/pokemon/${id}`
         const res = await fetch(url)
         const pokemon = await res.json()
         commit('setPokemon', pokemon)
       } catch (error) {
-        console.error(error)
+        console.error('Error fetching pokemon', error)
       }
   },
   async fetchEvolutionChain({commit}, {url}) {
@@ -44,15 +44,12 @@ export const actions = {
       const res = await fetch(url)
       const data = await res.json()
       const evolutionUrl = data.evolution_chain.url
-      try {
-        const fetchEvolution = await fetch(evolutionUrl)
-        const evelutionChain = await fetchEvolution.json()
-        commit('setEvolutionChain', evelutionChain)
-      } catch (err) {
-        console.error(err) 
-      }
+      const fetchEvolution = await fetch(evolutionUrl)
+      const evelutionChain = await fetchEvolution.json()
+      commit('setEvolutionChain', evelutionChain)
+      
     } catch (err) {
-      console.error(err)
+      console.error('Error fetching evolution chain', err)
     }
   },
   async fetchPokemonsEvolution({commit}, {names}) {
@@ -69,7 +66,7 @@ export const actions = {
       }
       commit('addPokemonEvolution', pokemons)
     } catch (error) {
-      console.error('error evolutions', error)
+      console.error('error fetching evolutions', error)
     }
   }
 }

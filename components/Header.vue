@@ -4,7 +4,9 @@
     <input
       v-model="search"
       type="text"
-      placeholder="Buscar Pokémon"
+      :placeholder="placeholder"
+      @focus="placeholder = ''"
+      @blur="placeholder = 'Buscar Pokémon'"
       @input="$emit('inputChange', $event.target.value)"
     />
   </div>
@@ -16,6 +18,7 @@ export default {
   data() {
     return {
       search: '',
+      placeholder: 'Buscar Pokémon',
     }
   },
   computed: {
@@ -38,8 +41,9 @@ input {
   background-color: #f3f3f3;
   border-radius: 50px;
   border: none;
-  padding: 15px;
+  box-shadow: 0 4px 14px 0 #6d6d6d;
   margin: 10px 0;
+  padding: 15px;
   text-align: center;
 }
 input:focus {

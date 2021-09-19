@@ -1,8 +1,9 @@
 <template>
   <div class="stats">
-    <h2 class="statsTitle title">stats</h2>
+    <h2 class="statsTitle title">Stats</h2>
     <p v-for="stat in stats" :key="stat.stat.name">
-      {{ stat.stat.name }}: {{ stat.base_stat }}%
+      <span class="statsSubtitle subtitle">{{ stat.stat.name }} :</span>
+      <span>{{ stat.base_stat }}%</span>
     </p>
   </div>
 </template>
@@ -23,7 +24,9 @@ export default {
 .stats {
   background-color: $color-stats;
 }
-.statsTitle {
+.statsTitle,
+.statsSubtitle {
   color: $color-stats;
+  text-transform: capitalize;
 }
 </style>

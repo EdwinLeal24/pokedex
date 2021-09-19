@@ -1,10 +1,22 @@
 <template>
   <div class="containerInfo">
-    <h2 class="infoTitle title">info</h2>
-    <p>Height: {{ pokemonInfo.height }}</p>
-    <p>weight: {{ pokemonInfo.weight }}</p>
-    <p>ability: {{ abilities }}</p>
-    <p>experience: {{ pokemonInfo.experience }}</p>
+    <h2 class="infoTitle title">Info</h2>
+    <p>
+      <span class="infoSubtitle subtitle">Height :</span>
+      <span>{{ pokemonInfo.height }}</span>
+    </p>
+    <p>
+      <span class="infoSubtitle subtitle">Weight :</span>
+      <span>{{ pokemonInfo.weight }}</span>
+    </p>
+    <p>
+      <span class="infoSubtitle subtitle">Ability :</span>
+      <span>{{ abilities }}</span>
+    </p>
+    <p>
+      <span class="infoSubtitle subtitle">Experience :</span>
+      <span>{{ pokemonInfo.experience }}</span>
+    </p>
   </div>
 </template>
 
@@ -30,7 +42,8 @@ export default {
 .containerInfo {
   background-color: $color-info;
 }
-.infoTitle {
+.infoTitle,
+.infoSubtitle {
   color: $color-info;
 }
 </style>

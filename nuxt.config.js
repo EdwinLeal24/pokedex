@@ -20,6 +20,7 @@ export default {
   css: [
     '~/assets/css/main'
   ],
+  
   styleResources: {
     scss: ['~/assets/css/variables.scss']
   },

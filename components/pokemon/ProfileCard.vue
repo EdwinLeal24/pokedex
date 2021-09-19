@@ -1,7 +1,9 @@
 <template>
   <section class="profileHeader">
     <div class="bgImage">
+      <Spinner v-if="!pokemonImage" />
       <img
+        v-else
         :src="pokemonImage"
         :alt="`Pokemon ${pokemon.name}`"
         class="pokemonImage"
@@ -13,9 +15,7 @@
     </div>
 
     <div class="types">
-      <div v-for="type in pokemon.types" :key="type.slot" class="tabType">
-        {{ type.type.name }}
-      </div>
+      <Type v-for="type in pokemon.types" :key="type.slot" :type="type" />
     </div>
   </section>
 </template>
@@ -37,7 +37,7 @@ export default {
 }
 </script>
 
-<style>
+<style lang="scss">
 .profileHeader {
   margin: 20px 0;
   place-items: center;
@@ -50,11 +50,7 @@ export default {
   width: 80%;
   height: 130px;
   border-radius: 10px;
-  background: linear-gradient(
-    90deg,
-    rgba(255, 163, 246, 1) 15%,
-    rgba(233, 97, 255, 1) 40%
-  );
+  background: $background-card;
 }
 .pokemonImage {
   position: relative;
@@ -69,7 +65,7 @@ export default {
   z-index: 1;
 }
 .number {
-  color: rgba(224, 35, 255, 1);
+  color: $color-primary;
 }
 .profileName {
   background-color: #696969;
@@ -82,14 +78,5 @@ export default {
   flex-wrap: wrap;
   justify-content: center;
   width: 82%;
-}
-.tabType {
-  padding: 5px 40px;
-  margin: 7px;
-  border-radius: 10px;
-  background-color: #78c850;
-  color: #ffffff;
-  text-align: center;
-  font-weight: bold;
 }
 </style>

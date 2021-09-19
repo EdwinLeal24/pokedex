@@ -1,10 +1,16 @@
 <template>
   <div>
     <nuxt-link to="/">
-      <ArrowBack />
+      <BackHome />
     </nuxt-link>
     <div class="profile">
+      <nuxt-link :to="`/pokemon/${pokemon.id - 1}`">
+        <Arrow v-if="pokemon.id > 1" />
+      </nuxt-link>
       <ProfileCard :pokemon="pokemon" />
+      <nuxt-link :to="`/pokemon/${pokemon.id + 1}`">
+        <Arrow direction="right" />
+      </nuxt-link>
     </div>
     <div class="profileBody">
       <section class="sectionBody">
@@ -17,7 +23,7 @@
 </template>
 
 <script>
-import { mapGetters } from 'vuex'
+import { mapGetters, mapActions } from 'vuex'
 export default {
   computed: {
     ...mapGetters(['getPokemon', 'getEvolutions', 'getPokemonsEvolutions']),
@@ -61,17 +67,24 @@ export default {
   },
   async mounted() {
     const pokemonId = this.$route.params.pokemonId
-    await this.$store.dispatch('fetchPokemon', { id: pokemonId })
-    await this.$store.dispatch('fetchEvolutionChain', {
+    await this.fetchPokemon({ id: pokemonId })
+    await this.fetchEvolutionChain({
       url: this.pokemon?.species?.url,
     })
     const name1 = this.getEvolutions?.chain?.species?.name
     const name2 = this.getEvolutions?.chain?.evolves_to[0]?.species?.name
     const name3 =
       this.getEvolutions?.chain?.evolves_to[0]?.evolves_to[0]?.species?.name
-    await this.$store.dispatch('fetchPokemonsEvolution', {
+    await this.fetchPokemonsEvolution({
       names: [name1, name2, name3],
     })
+  },
+  methods: {
+    ...mapActions([
+      'fetchPokemon',
+      'fetchEvolutionChain',
+      'fetchPokemonsEvolution',
+    ]),
   },
 }
 </script>
@@ -79,8 +92,8 @@ export default {
 <style>
 .profile {
   display: flex;
-  flex-direction: column;
   place-items: center;
+  justify-content: center;
 }
 .profileBody {
   display: flex;
@@ -95,37 +108,23 @@ section {
   width: 50%;
 }
 .sectionBody {
-  width: 80%;
-  justify-content: space-evenly;
   flex-wrap: wrap;
+  justify-content: space-evenly;
+  margin-bottom: 20px;
+  width: 80%;
 }
 .bodyInfo {
-  display: flex;
-  width: 100%;
-  height: 300px;
-  margin-top: 50px;
-  padding: 0 30px;
-  border-radius: 50px;
   background: rgb(255, 163, 246);
   background: linear-gradient(
     35deg,
     rgba(255, 163, 246, 1) 15%,
     rgba(233, 97, 255, 1) 40%
   );
-}
-.arrowImage {
-  transform: rotate(-90deg);
-  width: 3rem;
-}
-.backArrow {
-  position: absolute;
-  height: 4rem;
-  width: 4rem;
-  margin: 15px;
-  background-color: #e85382;
-  border-radius: 100%;
-  border: 3px solid gray;
-  padding: 10px;
-  cursor: pointer;
+  border-radius: 50px;
+  display: flex;
+  height: 300px;
+  margin-top: 50px;
+  padding: 0 30px;
+  width: 100%;
 }
 </style>

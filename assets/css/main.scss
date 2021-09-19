@@ -22,12 +22,7 @@ h2 {
 }
 
 a {
-  color: #0070f3;
   text-decoration: none;
-}
-
-a:hover {
-  text-decoration: underline;
 }
 
 img {
@@ -39,10 +34,16 @@ img {
   box-sizing: border-box;
 }
 
-.title {
+.title,
+.subtitle {
   background-color: #fff;
   border-radius: 5px;
   padding: 0 5px;
+}
+
+.subtitle {
+  padding: 2px;
+  margin: 0 2px 2px 0;
 }
 
 .stats,

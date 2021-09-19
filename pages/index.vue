@@ -1,7 +1,8 @@
 <template>
   <div class="container">
     <Header @inputChange="handleSearch($event)" />
-    <section class="pokemonsGrid">
+    <Spinner v-if="loading" />
+    <section v-else class="pokemonsGrid">
       <nuxt-link
         v-for="pokemon in filterPokemons(search)"
         :key="pokemon.id"
@@ -10,6 +11,10 @@
         <Card :pokemon="pokemon" />
       </nuxt-link>
     </section>
+
+    <button v-if="pokemons.length" class="buttonMore" @click="showMore">
+      <p>Show me more</p>
+    </button>
   </div>
 </template>
 
@@ -19,34 +24,50 @@ export default {
     return {
       search: '',
       pokemons: [],
+      offset: 0,
     }
   },
-  mounted() {
-    const pokemonsLimit = 50
-    const getPokemon = async (id) => {
-      try {
-        const url = `https://pokeapi.co/api/v2/pokemon/${id}`
-        const res = await fetch(url)
-        this.pokemons.push(await res.json())
-      } catch (error) {
-        console.error('An error ocurred', error)
-      }
-    }
+  computed: {
+    loading() {
+      return !this.pokemons.length
+    },
+  },
 
-    for (let i = 1; i <= pokemonsLimit; i++) {
-      getPokemon(i)
-    }
-    return this.pokemons
+  async mounted() {
+    await this.fetchPokemons(0)
   },
   methods: {
     handleSearch(event) {
       this.search = event
     },
+
     filterPokemons(keyword) {
-      const pokemonsfiltered = this.pokemons.filter((pokemon) =>
-        pokemon.name.includes(keyword)
-      )
+      const pokemonsfiltered = this.pokemons
+        .filter((pokemon) => pokemon.name.includes(keyword))
+        .sort((a, b) => a.id - b.id)
       return pokemonsfiltered
+    },
+
+    async fetchPokemons(offset) {
+      const apiUrl = 'https://pokeapi.co/api/v2/pokemon/'
+      let pokemonsUrls = []
+      try {
+        const res = await fetch(`${apiUrl}?offset=${offset * 30}&limit=30`)
+        const results = await res.json()
+        pokemonsUrls = results.results
+      } catch (error) {
+        console.error('An error ocurred', error)
+      }
+      for (const pokemon of pokemonsUrls) {
+        fetch(pokemon.url)
+          .then((res) => res.json())
+          .then((result) => this.pokemons.push(result))
+      }
+    },
+
+    async showMore() {
+      this.offset++
+      await this.fetchPokemons(this.offset)
     },
   },
 }
@@ -71,5 +92,17 @@ export default {
   overflow-y: auto;
   padding: 20px;
   width: 90%;
+}
+.buttonMore {
+  background: #7928ca;
+  border-radius: 10px;
+  border-style: none;
+  color: #fff;
+  cursor: pointer;
+  margin: 15px 0;
+  padding: 15px;
+}
+.buttonMore:hover {
+  box-shadow: 0 4px 14px 0 rgb(121 40 202 / 60%);
 }
 </style>

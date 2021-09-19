@@ -1,6 +1,7 @@
 <template>
   <div class="card">
-    <img :src="img" :alt="`Pokemon ${name}`" class="imagePokemon" />
+    <Spinner v-if="!img" />
+    <img v-else :src="img" :alt="`Pokemon ${name}`" class="imagePokemon" />
     <br />
     <div class="sectionName">
       <p class="name">
@@ -33,14 +34,10 @@ export default {
 }
 </script>
 
-<style>
+<style lang="scss">
 .card {
   background: rgb(255, 197, 249);
-  background: linear-gradient(
-    49deg,
-    rgba(255, 197, 249, 1) 15%,
-    rgba(224, 35, 255, 1) 100%
-  );
+  background: $background-card;
   border-radius: 20px;
   cursor: pointer;
   display: inline-grid;
@@ -49,6 +46,9 @@ export default {
   margin: 25px 0;
   vertical-align: middle;
   width: 200px;
+}
+.card:hover {
+  box-shadow: 0 4px 14px 0 rgb(121 40 202 / 60%);
 }
 .imagePokemon {
   grid-row-end: 2;
@@ -69,7 +69,7 @@ export default {
   z-index: 1;
 }
 .pokemonId {
-  color: #e961ff;
+  color: $color-primary;
 }
 .name {
   display: flex;
